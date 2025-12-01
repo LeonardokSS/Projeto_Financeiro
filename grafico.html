@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráficos de Gastos</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0d4d0d 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 40px;
+            text-align: center;
+            font-size: 32px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 2px solid #10b981;
+            margin-bottom: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #10b981;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #065f46;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        .btn-atualizar {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-atualizar:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 2px solid #10b981;
+        }
+
+        .chart-title {
+            color: #1a1a1a;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .chart-container.large {
+            height: 400px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+        }
+
+        .empty-state-subtext {
+            font-size: 14px;
+            color: #666;
+        }
+
+        #msg {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        #msg.show {
+            display: block;
+        }
+
+        #msg.success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        #msg.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-card {
+                padding: 20px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-value {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📈 Análise de Gastos</h1>
+
+        <div class="header-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Gasto</div>
+                    <div class="stat-value">R$ <span id="totalGasto">0,00</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Categorias</div>
+                    <div class="stat-value"><span id="totalCategorias">0</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Média por Gasto</div>
+                    <div class="stat-value">R$ <span id="mediaGasto">0,00</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Maior Gasto</div>
+                    <div class="stat-value">R$ <span id="maiorGasto">0,00</span></div>
+                </div>
+            </div>
+            <button class="btn-atualizar" onclick="carregarDados()">🔄 Atualizar Gráficos</button>
+        </div>
+
+        <div id="chartsContainer" class="charts-grid">
+            <div class="loading">⏳ Carregando dados...</div>
+        </div>
+
+        <p id="msg"></p>
+    </div>
+
+    <script>
+        let chartInstances = [];
+
+        // Função para formatar valor em reais
+        function formatarReal(valor) {
+            return parseFloat(valor).toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Função para gerar cores verde
+        function gerarCoresVerde(quantidade) {
+            const coresVerde = [
+                '#10b981', '#059669', '#047857', '#065f46', '#064e3b',
+                '#34d399', '#6ee7b7', '#a7f3d0', '#22c55e', '#16a34a',
+                '#15803d', '#14532d', '#86efac', '#4ade80', '#00ff00'
+            ];
+            
+            const cores = [];
+            for (let i = 0; i < quantidade; i++) {
+                cores.push(coresVerde[i % coresVerde.length]);
+            }
+            return cores;
+        }
+
+        // Função para destruir gráficos existentes
+        function destruirGraficos() {
+            chartInstances.forEach(chart => chart.destroy());
+            chartInstances = [];
+        }
+
+        // Função para criar gráfico de pizza
+        function criarGraficoPizza(dados) {
+            const categorias = {};
+            dados.forEach(gasto => {
+                if (categorias[gasto.categoria]) {
+                    categorias[gasto.categoria] += parseFloat(gasto.valor);
+                } else {
+                    categorias[gasto.categoria] = parseFloat(gasto.valor);
+                }
+            });
+
+            const labels = Object.keys(categorias);
+            const values = Object.values(categorias);
+            const cores = gerarCoresVerde(labels.length);
+
+            const ctx = document.getElementById('chartPizza').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: cores,
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: { size: 12, weight: '600' },
+                                color: '#1a1a1a'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = formatarReal(context.parsed);
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentual = ((context.parsed / total) * 100).toFixed(1);
+                                    return `${label}: R$ ${value} (${percentual}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            chartInstances.push(chart);
+        }
+
+        // Função para criar gráfico de barras
+        function criarGraficoBarras(dados) {
+            const categorias = {};
+            dados.forEach(gasto => {
+                if (categorias[gasto.categoria]) {
+                    categorias[gasto.categoria] += parseFloat(gasto.valor);
+                } else {
+                    categorias[gasto.categoria] = parseFloat(gasto.valor);
+                }
+            });
+
+            const labels = Object.keys(categorias);
+            const values = Object.values(categorias);
+            const cores = gerarCoresVerde(labels.length);
+
+            const ctx = document.getElementById('chartBarras').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Gastos por Categoria (R$)',
+                        data: values,
+                        backgroundColor: cores,
+                        borderColor: cores.map(c => c),
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'R$ ' + formatarReal(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + formatarReal(value);
+                                },
+                                color: '#1a1a1a',
+                                font: { weight: '600' }
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#1a1a1a',
+                                font: { weight: '600' }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+            chartInstances.push(chart);
+        }
+
+        // Função para criar gráfico de linha (evolução temporal)
+        function criarGraficoLinha(dados) {
+            // Agrupa por data
+            const gastosPorData = {};
+            dados.forEach(gasto => {
+                const data = new Date(gasto.data || new Date()).toLocaleDateString('pt-BR');
+                if (gastosPorData[data]) {
+                    gastosPorData[data] += parseFloat(gasto.valor);
+                } else {
+                    gastosPorData[data] = parseFloat(gasto.valor);
+                }
+            });
+
+            const labels = Object.keys(gastosPorData).sort((a, b) => {
+                const [diaA, mesA, anoA] = a.split('/');
+                const [diaB, mesB, anoB] = b.split('/');
+                return new Date(anoA, mesA - 1, diaA) - new Date(anoB, mesB - 1, diaB);
+            });
+            const values = labels.map(label => gastosPorData[label]);
+
+            const ctx = document.getElementById('chartLinha').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Gastos ao Longo do Tempo (R$)',
+                        data: values,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'R$ ' + formatarReal(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + formatarReal(value);
+                                },
+                                color: '#1a1a1a',
+                                font: { weight: '600' }
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#1a1a1a',
+                                font: { weight: '600' }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+            chartInstances.push(chart);
+        }
+
+        // Função para criar gráfico de rosca
+        function criarGraficoRosca(dados) {
+            const categorias = {};
+            dados.forEach(gasto => {
+                if (categorias[gasto.categoria]) {
+                    categorias[gasto.categoria]++;
+                } else {
+                    categorias[gasto.categoria] = 1;
+                }
+            });
+
+            const labels = Object.keys(categorias);
+            const values = Object.values(categorias);
+            const cores = gerarCoresVerde(labels.length);
+
+            const ctx = document.getElementById('chartRosca').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Quantidade de Gastos',
+                        data: values,
+                        backgroundColor: cores,
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: { size: 12, weight: '600' },
+                                color: '#1a1a1a'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentual = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value} gastos (${percentual}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            chartInstances.push(chart);
+        }
+
+        // Função para calcular estatísticas
+        function calcularEstatisticas(dados) {
+            if (dados.length === 0) {
+                document.getElementById('totalGasto').textContent = '0,00';
+                document.getElementById('totalCategorias').textContent = '0';
+                document.getElementById('mediaGasto').textContent = '0,00';
+                document.getElementById('maiorGasto').textContent = '0,00';
+                return;
+            }
+
+            const total = dados.reduce((acc, gasto) => acc + parseFloat(gasto.valor), 0);
+            const categorias = new Set(dados.map(g => g.categoria)).size;
+            const media = total / dados.length;
+            const maior = Math.max(...dados.map(g => parseFloat(g.valor)));
+
+            document.getElementById('totalGasto').textContent = formatarReal(total);
+            document.getElementById('totalCategorias').textContent = categorias;
+            document.getElementById('mediaGasto').textContent = formatarReal(media);
+            document.getElementById('maiorGasto').textContent = formatarReal(maior);
+        }
+
+        // Função para carregar dados e criar gráficos
+        function carregarDados() {
+            fetch("/listar-gastos")
+                .then(r => r.json())
+                .then(res => {
+                    const chartsContainer = document.getElementById("chartsContainer");
+                    
+                    // Destroi gráficos anteriores
+                    destruirGraficos();
+                    
+                    if (res.gastos && res.gastos.length > 0) {
+                        // Calcula estatísticas
+                        calcularEstatisticas(res.gastos);
+                        
+                        // Cria estrutura dos gráficos
+                        chartsContainer.innerHTML = `
+                            <div class="chart-card">
+                                <h2 class="chart-title">📊 Distribuição por Categoria</h2>
+                                <div class="chart-container">
+                                    <canvas id="chartPizza"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-card">
+                                <h2 class="chart-title">📈 Comparativo de Categorias</h2>
+                                <div class="chart-container">
+                                    <canvas id="chartBarras"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-card" style="grid-column: 1 / -1;">
+                                <h2 class="chart-title">📉 Evolução Temporal dos Gastos</h2>
+                                <div class="chart-container large">
+                                    <canvas id="chartLinha"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-card">
+                                <h2 class="chart-title">🎯 Frequência de Gastos</h2>
+                                <div class="chart-container">
+                                    <canvas id="chartRosca"></canvas>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Cria os gráficos
+                        setTimeout(() => {
+                            criarGraficoPizza(res.gastos);
+                            criarGraficoBarras(res.gastos);
+                            criarGraficoLinha(res.gastos);
+                            criarGraficoRosca(res.gastos);
+                        }, 100);
+                        
+                    } else {
+                        chartsContainer.innerHTML = `
+                            <div class="chart-card" style="grid-column: 1 / -1;">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📊</div>
+                                    <div class="empty-state-text">Nenhum dado disponível</div>
+                                    <div class="empty-state-subtext">Adicione gastos para visualizar os gráficos</div>
+                                </div>
+                            </div>
+                        `;
+                        calcularEstatisticas([]);
+                    }
+                })
+                .catch(err => {
+                    console.error("Erro ao carregar dados:", err);
+                    const msgElement = document.getElementById("msg");
+                    msgElement.textContent = "Erro ao carregar dados. Tente novamente.";
+                    msgElement.className = "show error";
+                    
+                    setTimeout(() => {
+                        msgElement.className = "";
+                    }, 3000);
+                });
+        }
+
+        // Carrega os dados quando a página é carregada
+        window.addEventListener("DOMContentLoaded", carregarDados);
+    </script>
+</body>
+</html>

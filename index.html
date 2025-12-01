@@ -1,37 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Menu Financeiro</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 300px;
+            margin: 40px auto;
+        }
+
+        a {
+            text-decoration: none;
+            padding: 15px;
+            background: #333;
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        a:hover {
+            background: #555;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello World</h1>
-    <p>Check the console for JavaScript output.</p>
 
-    <td>
-        <tr>Preencha seu salario:  <input type="text" id="salario"></tr>
-        <br><br>
-        <tr>Preencha a soma de seus gastos fixos:  <input type="text"id="gastosF"></tr>
-        <br><br>
-        <tr>Preencha seus gastos não fixos:  <input type="text" id="gastosN"></tr>
-        <br><br>
-        <button type="button"id="botao">Calcular valor restante</button>
-        <br><br>
-        <P id="resultado"></P>
-    </td>
+    <h1>Controle Financeiro</h1>
+
+    <div class="menu">
+        <a href="/salvar-gasto">Adicionar Gasto</a>
+        <a href="/ver-gastos">Ver Gastos</a>
+        <a href="/grafico">Gerar Gráfico</a>
+        <a href="/sobre">Sobre o Sistema</a>
+    </div>
+
 </body>
-<script src="script.js"></script>
-<script>
-document.getElementById('botao').addEventListener('click',function(){  
-    const salario =parseFloat(document.getElementById("salario").value)
-    const gastosFixos = parseFloat(document.getElementById("gastosF").value)
-    const gastosNFixos = parseFloat(document.getElementById("gastosN").value)
-    
-    const final = salario - gastosFixos - gastosNFixos
-
-    document.getElementById('resultado').textContent = final
-
-});
-</script>
 </html>

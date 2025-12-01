@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Gastos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0d4d0d 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            border: 2px solid #10b981;
+        }
+
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .total-gasto {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-atualizar {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-atualizar:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.2s;
+        }
+
+        tbody tr:hover {
+            background-color: #f0fdf4;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        td {
+            padding: 15px;
+            color: #333;
+        }
+
+        .categoria-cell {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .valor-cell {
+            color: #10b981;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .data-cell {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .btn-deletar {
+            padding: 8px 16px;
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .btn-deletar:hover {
+            background-color: #dc2626;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+        }
+
+        .empty-state-subtext {
+            font-size: 14px;
+            color: #666;
+        }
+
+        #msg {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        #msg.show {
+            display: block;
+        }
+
+        #msg.success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        #msg.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .header-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .total-gasto, .btn-atualizar {
+                width: 100%;
+                text-align: center;
+            }
+
+            th, td {
+                padding: 10px 8px;
+                font-size: 13px;
+            }
+        }
+            .btn-voltar {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: #333;
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        }
+
+    .btn-voltar:hover {
+        background: #555;
+        }
+    </style>
+</head>
+<body>
+    <a href="/index.html" class="btn-voltar">Voltar</a>
+    <div class="container">
+        <h1>📊 Lista de Gastos</h1>
+        
+        <div class="header-section">
+            <div class="total-gasto">
+                Total: R$ <span id="total">0,00</span>
+            </div>
+            <button class="btn-atualizar" onclick="carregarGastos()">🔄 Atualizar</button>
+        </div>
+
+        <div class="table-container">
+            <table id="tabelaGastos">
+                <thead>
+                    <tr>
+                        <th>Categoria</th>
+                        <th>Valor</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="corpoTabela">
+                    <tr>
+                        <td colspan="4" class="loading">Carregando gastos...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p id="msg"></p>
+    </div>
+
+    <script>
+        // Função para formatar valor em reais
+        function formatarReal(valor) {
+            return parseFloat(valor).toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Função para formatar data
+        function formatarData(dataString) {
+            const data = new Date(dataString);
+            return data.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Função para carregar gastos
+        function carregarGastos() {
+            fetch("/listar-gastos")
+                .then(r => r.json())
+                .then(res => {
+                    const corpoTabela = document.getElementById("corpoTabela");
+                    const totalElement = document.getElementById("total");
+                    
+                    // Limpa a tabela
+                    corpoTabela.innerHTML = "";
+                    
+                    if (res.gastos && res.gastos.length > 0) {
+                        let total = 0;
+                        
+                        res.gastos.forEach(gasto => {
+                            total += parseFloat(gasto.valor);
+                            
+                            const linha = document.createElement("tr");
+                            linha.innerHTML = `
+                                <td class="categoria-cell">${gasto.categoria}</td>
+                                <td class="valor-cell">R$ ${formatarReal(gasto.valor)}</td>
+                                <td class="data-cell">${formatarData(gasto.data || new Date())}</td>
+                                <td>
+                                    <button class="btn-deletar" onclick="deletarGasto(${gasto.id})">
+                                        🗑️ Deletar
+                                    </button>
+                                </td>
+                            `;
+                            corpoTabela.appendChild(linha);
+                        });
+                        
+                        totalElement.textContent = formatarReal(total);
+                    } else {
+                        corpoTabela.innerHTML = `
+                            <tr>
+                                <td colspan="4">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">📭</div>
+                                        <div class="empty-state-text">Nenhum gasto registrado</div>
+                                        <div class="empty-state-subtext">Adicione seu primeiro gasto para começar</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                        totalElement.textContent = "0,00";
+                    }
+                })
+                .catch(err => {
+                    console.error("Erro ao carregar gastos:", err);
+                    const msgElement = document.getElementById("msg");
+                    msgElement.textContent = "Erro ao carregar gastos. Tente novamente.";
+                    msgElement.className = "show error";
+                    
+                    setTimeout(() => {
+                        msgElement.className = "";
+                    }, 3000);
+                });
+        }
+
+        // Função para deletar gasto
+        function deletarGasto(id) {
+            if (confirm("Deseja realmente deletar este gasto?")) {
+                fetch(`/deletar-gasto/${id}`, {
+                    method: "DELETE"
+                })
+                .then(r => r.json())
+                .then(res => {
+                    const msgElement = document.getElementById("msg");
+                    msgElement.textContent = res.mensagem || "Gasto deletado com sucesso!";
+                    msgElement.className = "show success";
+                    
+                    setTimeout(() => {
+                        msgElement.className = "";
+                    }, 3000);
+                    
+                    // Recarrega a lista
+                    carregarGastos();
+                })
+                .catch(err => {
+                    console.error("Erro ao deletar gasto:", err);
+                    const msgElement = document.getElementById("msg");
+                    msgElement.textContent = "Erro ao deletar gasto. Tente novamente.";
+                    msgElement.className = "show error";
+                    
+                    setTimeout(() => {
+                        msgElement.className = "";
+                    }, 3000);
+                });
+            }
+        }
+
+        // Carrega os gastos quando a página é carregada
+        window.addEventListener("DOMContentLoaded", carregarGastos);
+    </script>
+</body>
+</html>
