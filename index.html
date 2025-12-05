@@ -3,52 +3,781 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Financeiro</title>
-
+    <title>Dashboard Financeiro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f0f0f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1929 0%, #1a2f3a 100%);
+            min-height: 100vh;
             padding: 20px;
         }
 
-        h1 {
-            text-align: center;
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .menu {
+        .welcome-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 30px 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .welcome-header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            right: 20%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .greeting {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .greeting h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .greeting .emoji {
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            margin-bottom: 25px;
+        }
+
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .info-card-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .info-card-value {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .quick-actions {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-left: 5px;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            background: linear-gradient(135deg, var(--bg-color-1) 0%, var(--bg-color-2) 100%);
+            padding: 25px 20px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: white;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            max-width: 300px;
-            margin: 40px auto;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid transparent;
+            cursor: pointer;
         }
 
-        a {
-            text-decoration: none;
-            padding: 15px;
-            background: #333;
-            color: white;
-            border-radius: 8px;
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .action-card.green { --bg-color-1: #10b981; --bg-color-2: #059669; }
+        .action-card.red { --bg-color-1: #ef4444; --bg-color-2: #dc2626; }
+        .action-card.blue { --bg-color-1: #3b82f6; --bg-color-2: #2563eb; }
+        .action-card.purple { --bg-color-1: #a855f7; --bg-color-2: #9333ea; }
+        .action-card.gray { --bg-color-1: #6b7280; --bg-color-2: #4b5563; }
+        .action-card.teal { --bg-color-1: #14b8a6; --bg-color-2: #0d9488; }
+
+        .action-icon {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .action-title {
+            font-size: 16px;
+            font-weight: 600;
             text-align: center;
-            font-size: 18px;
         }
 
-        a:hover {
-            background: #555;
+        .analytics-section {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
         }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chart-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .goal-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-circle {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px 0;
+        }
+
+        .progress-circle svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-circle-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 12;
+        }
+
+        .progress-circle-fill {
+            fill: none;
+            stroke: url(#gradient);
+            stroke-width: 12;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .progress-percentage {
+            font-size: 36px;
+            font-weight: 700;
+            color: #10b981;
+            display: block;
+        }
+
+        .progress-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+        }
+
+        .goal-info {
+            text-align: center;
+            color: white;
+            width: 100%;
+        }
+
+        .goal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #10b981;
+        }
+
+        .goal-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .goal-stat {
+            text-align: center;
+        }
+
+        .goal-stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            display: block;
+        }
+
+        .goal-stat-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 70px;
+            height: 100vh;
+            background: rgba(10, 25, 41, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            gap: 25px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .sidebar-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-item {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.6);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 20px;
+            text-decoration: none;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .main-content {
+            margin-left: 90px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+        }
+
+        @media (max-width: 1024px) {
+            .analytics-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+                padding: 15px 0;
+            }
+
+            .main-content {
+                margin-left: 70px;
+            }
+
+            .welcome-header {
+                padding: 20px 25px;
+            }
+
+            .greeting h1 {
+                font-size: 22px;
+            }
+
+            .actions-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 15px;
+            }
+
+            .action-card {
+                padding: 20px 15px;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .action-card {
+            animation: fadeInUp 0.5s ease backwards;
+        }
+
+        .action-card:nth-child(1) { animation-delay: 0.1s; }
+        .action-card:nth-child(2) { animation-delay: 0.2s; }
+        .action-card:nth-child(3) { animation-delay: 0.3s; }
+        .action-card:nth-child(4) { animation-delay: 0.4s; }
+        .action-card:nth-child(5) { animation-delay: 0.5s; }
+        .action-card:nth-child(6) { animation-delay: 0.6s; }
     </style>
 </head>
 <body>
-
-    <h1>Controle Financeiro</h1>
-
-    <div class="menu">
-        <a href="/salvar-gasto">Adicionar Gasto</a>
-        <a href="/ver-gastos">Ver Gastos</a>
-        <a href="/grafico">Gerar Gráfico</a>
-        <a href="/sobre">Sobre o Sistema</a>
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <i class="fas fa-wallet"></i>
+        </div>
+        
+        <a href="/" class="sidebar-item active" title="Dashboard">
+            <i class="fas fa-home"></i>
+        </a>
+        
+        <a href="/ver-gastos" class="sidebar-item" title="Gastos">
+            <i class="fas fa-receipt"></i>
+        </a>
+        
+        <a href="/grafico-dados" class="sidebar-item" title="Gráficos">
+            <i class="fas fa-chart-line"></i>
+        </a>
+        
+        <a href="#" class="sidebar-item" title="Relatórios">
+            <i class="fas fa-file-alt"></i>
+        </a>
+        
+        <a href="#" class="sidebar-item" title="Configurações">
+            <i class="fas fa-cog"></i>
+        </a>
+        
+        <a href="#" class="sidebar-item" style="margin-top: auto;" title="Ajuda">
+            <i class="fas fa-question-circle"></i>
+        </a>
+        
+        <a href="#" class="sidebar-item" title="Sair">
+            <i class="fas fa-sign-out-alt"></i>
+        </a>
     </div>
 
+    <div class="main-content">
+        <div class="container">
+            <div class="welcome-header">
+                <div class="welcome-content">
+                    <div class="greeting">
+                        <h1 id="Saudacao">Olá</h1>
+                        <span class="emoji">👋</span>
+                    </div>
+                    <p class="subtitle">Seu painel financeiro completo aqui</p>
+                    
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <div class="info-card-label">📊 Controle Total</div>
+                            <div class="info-card-value">Acompanhe entradas e saídas em tempo real</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-label">💰 Metas Inteligentes</div>
+                            <div class="info-card-value">Defina e acompanhe seus objetivos financeiros</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-label">📈 Relatórios Avançados</div>
+                            <div class="info-card-value">Análises detalhadas do seu dinheiro</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <h2 class="section-title">Ações Rápidas</h2>
+                <div class="actions-grid">
+                    <a href="/salvar-gasto" class="action-card green">
+                        <div class="action-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <div class="action-title">Novo Gasto</div>
+                    </a>
+
+                    <a href="/ver-gastos" class="action-card red">
+                        <div class="action-icon">
+                            <i class="fas fa-list-alt"></i>
+                        </div>
+                        <div class="action-title">Todos Gastos</div>
+                    </a>
+
+                    <a href="/grafico-dados" class="action-card blue">
+                        <div class="action-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div class="action-title">Ver Gráficos</div>
+                    </a>
+
+                    <a href="#" class="action-card purple">
+                        <div class="action-icon">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="action-title">Categorias</div>
+                    </a>
+
+                    <a href="#" class="action-card gray">
+                        <div class="action-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <div class="action-title">Exportar</div>
+                    </a>
+
+                    <a href="/metas" class="action-card teal">
+                        <div class="action-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <div class="action-title">Metas Financeiras</div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="analytics-section">
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-line" style="color: #10b981;"></i>
+                        Evolução de Gastos
+                    </div>
+                    <div id="chartWrapper">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="goal-card">
+                    <div class="goal-info">
+                        <div class="goal-title">
+                            <i class="fas fa-bullseye"></i> Meta do Mês
+                        </div>
+                    </div>
+
+                    <div class="progress-circle">
+                        <svg width="200" height="200">
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <circle class="progress-circle-bg" cx="100" cy="100" r="85"></circle>
+                            <circle id="progressCircle" class="progress-circle-fill" cx="100" cy="100" r="85"></circle>
+                        </svg>
+                        <div class="progress-text">
+                            <span class="progress-percentage" id="progressPercentage">0%</span>
+                            <span class="progress-label">Concluído</span>
+                        </div>
+                    </div>
+
+                    <div class="goal-stats">
+                        <div class="goal-stat">
+                            <span class="goal-stat-value" id="gastoAtual">R$ 0</span>
+                            <span class="goal-stat-label">Gasto Atual</span>
+                        </div>
+                        <div class="goal-stat">
+                            <span class="goal-stat-value" id="metaTotal">R$ 2000</span>
+                            <span class="goal-stat-label">Meta</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chartInstance = null;
+
+        function atualizarSaudacao() {
+            const hora = new Date().getHours();
+            const greetingElement = document.querySelector('.greeting h1');
+            
+            let saudacao = 'Boa tarde';
+            if (hora < 12) {
+                saudacao = 'Bom dia';
+            } else if (hora >= 18) {
+                saudacao = 'Boa noite';
+            }
+            
+            greetingElement.textContent = `${saudacao}, Leo!`;
+        }
+
+        async function carregarDados() {
+            try {
+                const response = await fetch('/listar-gastos');
+                const data = await response.json();
+                const gastos = data.gastos || [];
+
+                const gastosPorMes = processarGastosPorMes(gastos);
+                criarGraficoMensal(gastosPorMes, gastos.length);
+
+                calcularMeta(gastos);
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            }
+        }
+
+        function processarGastosPorMes(gastos) {
+            if (gastos.length === 0) {
+                return { labels: [], valores: [] };
+            }
+
+            const mesesMap = new Map();
+            const mesesNomes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            
+            // Agrupa gastos por mês/ano
+            gastos.forEach(gasto => {
+                const data = new Date(gasto.data);
+                const mesAno = `${data.getFullYear()}-${String(data.getMonth()).padStart(2, '0')}`;
+                const mesAnoLabel = `${mesesNomes[data.getMonth()]}/${data.getFullYear().toString().slice(-2)}`;
+                
+                if (!mesesMap.has(mesAno)) {
+                    mesesMap.set(mesAno, { label: mesAnoLabel, valor: 0 });
+                }
+                mesesMap.get(mesAno).valor += parseFloat(gasto.valor);
+            });
+
+            // Ordena por data e pega os últimos 6 meses
+            const mesesOrdenados = Array.from(mesesMap.entries())
+                .sort((a, b) => a[0].localeCompare(b[0]))
+                .slice(-6);
+
+            return {
+                labels: mesesOrdenados.map(([_, data]) => data.label),
+                valores: mesesOrdenados.map(([_, data]) => data.valor)
+            };
+        }
+
+        function criarGraficoMensal(dados, totalGastos) {
+            const wrapper = document.getElementById('chartWrapper');
+            
+            // Se não há gastos, mostra mensagem
+            if (totalGastos === 0) {
+                wrapper.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-chart-line"></i>
+                        <p>Nenhum gasto registrado ainda.<br>Comece adicionando seu primeiro gasto!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Se já existe um gráfico, destrói antes de criar novo
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            wrapper.innerHTML = '<canvas id="monthlyChart"></canvas>';
+            const ctx = document.getElementById('monthlyChart').getContext('2d');
+            
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dados.labels,
+                    datasets: [{
+                        label: 'Gastos (R$)',
+                        data: dados.valores,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'R$ ' + context.parsed.y.toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                callback: function(value) {
+                                    return 'R$ ' + value.toFixed(0);
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function calcularMeta(gastos) {
+            const mesAtual = new Date().getMonth();
+            const anoAtual = new Date().getFullYear();
+            
+            const gastosMesAtual = gastos.filter(g => {
+                const data = new Date(g.data);
+                return data.getMonth() === mesAtual && data.getFullYear() === anoAtual;
+            });
+
+            const totalGasto = gastosMesAtual.reduce((acc, g) => acc + parseFloat(g.valor), 0);
+            const meta = 2000;
+            const porcentagem = Math.min((totalGasto / meta) * 100, 100);
+
+            document.getElementById('gastoAtual').textContent = `R$ ${totalGasto.toFixed(2)}`;
+            document.getElementById('metaTotal').textContent = `R$ ${meta.toFixed(2)}`;
+            document.getElementById('progressPercentage').textContent = `${porcentagem.toFixed(0)}%`;
+
+            const circle = document.getElementById('progressCircle');
+            const circumference = 2 * Math.PI * 85;
+            const offset = circumference - (porcentagem / 100) * circumference;
+            
+            circle.style.strokeDasharray = circumference;
+            circle.style.strokeDashoffset = circumference;
+            
+            setTimeout(() => {
+                circle.style.strokeDashoffset = offset;
+            }, 100);
+        }
+
+        function marcarItemAtivo() {
+            const path = window.location.pathname;
+            const items = document.querySelectorAll('.sidebar-item');
+            
+            items.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === path) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        document.querySelectorAll('.action-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 100);
+            });
+        });
+
+        atualizarSaudacao();
+        marcarItemAtivo();
+        carregarDados();
+    </script>
 </body>
 </html>

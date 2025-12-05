@@ -16,69 +16,69 @@
             font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #1a1a1a 0%, #0d4d0d 100%);
             min-height: 100vh;
-            padding: 40px 20px;
+            padding: 50px 30px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
         h1 {
             color: white;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
             text-align: center;
-            font-size: 32px;
+            font-size: 48px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .header-section {
             background: white;
-            padding: 30px;
-            border-radius: 15px;
+            padding: 40px;
+            border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            border: 2px solid #10b981;
-            margin-bottom: 30px;
+            border: 3px solid #10b981;
+            margin-bottom: 40px;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
         }
 
         .stat-card {
             background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-            padding: 20px;
-            border-radius: 10px;
-            border: 2px solid #10b981;
+            padding: 30px;
+            border-radius: 15px;
+            border: 3px solid #10b981;
             text-align: center;
         }
 
         .stat-label {
-            font-size: 14px;
+            font-size: 16px;
             color: #065f46;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .stat-value {
-            font-size: 28px;
+            font-size: 36px;
             color: #1a1a1a;
             font-weight: 700;
         }
 
         .btn-atualizar {
             width: 100%;
-            padding: 14px;
+            padding: 18px;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 18px;
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
@@ -92,64 +92,65 @@
 
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-            gap: 30px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
         }
 
         .chart-card {
             background: white;
-            padding: 30px;
-            border-radius: 15px;
+            padding: 40px;
+            border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            border: 2px solid #10b981;
+            border: 3px solid #10b981;
         }
 
         .chart-title {
             color: #1a1a1a;
-            font-size: 20px;
+            font-size: 26px;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             text-align: center;
         }
 
         .chart-container {
             position: relative;
-            height: 300px;
+            height: 450px;
         }
 
         .chart-container.large {
-            height: 400px;
+            height: 550px;
         }
 
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
             color: #666;
         }
 
         .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
+            font-size: 80px;
+            margin-bottom: 25px;
         }
 
         .empty-state-text {
-            font-size: 18px;
-            margin-bottom: 10px;
+            font-size: 24px;
+            margin-bottom: 15px;
             color: #1a1a1a;
         }
 
         .empty-state-subtext {
-            font-size: 14px;
+            font-size: 18px;
             color: #666;
         }
 
         #msg {
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 8px;
+            margin-top: 30px;
+            padding: 18px;
+            border-radius: 10px;
             text-align: center;
             font-weight: 500;
+            font-size: 16px;
             display: none;
         }
 
@@ -171,38 +172,77 @@
 
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 60px;
             color: white;
-            font-size: 18px;
+            font-size: 24px;
         }
 
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 24px;
-            }
-
+        @media (max-width: 1200px) {
             .charts-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 30px 15px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .header-section {
+                padding: 25px;
+            }
 
             .chart-card {
-                padding: 20px;
+                padding: 25px;
             }
 
             .stat-card {
-                padding: 15px;
+                padding: 20px;
             }
 
             .stat-value {
-                font-size: 22px;
+                font-size: 28px;
             }
+
+            .chart-title {
+                font-size: 20px;
+            }
+
+            .chart-container {
+                height: 350px;
+            }
+
+            .chart-container.large {
+                height: 450px;
+            }
+        }
+        .btn-voltar {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: #333;
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        }
+
+    .btn-voltar:hover {
+        background: #555;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📈 Análise de Gastos</h1>
-
+        <a href="/index.html" class="btn-voltar">Voltar</a>
         <div class="header-section">
             <div class="stats-grid">
                 <div class="stat-card">
@@ -288,7 +328,7 @@
                         data: values,
                         backgroundColor: cores,
                         borderColor: '#ffffff',
-                        borderWidth: 2
+                        borderWidth: 3
                     }]
                 },
                 options: {
@@ -298,12 +338,15 @@
                         legend: {
                             position: 'bottom',
                             labels: {
-                                padding: 15,
-                                font: { size: 12, weight: '600' },
+                                padding: 20,
+                                font: { size: 14, weight: '600' },
                                 color: '#1a1a1a'
                             }
                         },
                         tooltip: {
+                            bodyFont: { size: 14 },
+                            titleFont: { size: 16 },
+                            padding: 12,
                             callbacks: {
                                 label: function(context) {
                                     const label = context.label || '';
@@ -345,8 +388,8 @@
                         data: values,
                         backgroundColor: cores,
                         borderColor: cores.map(c => c),
-                        borderWidth: 2,
-                        borderRadius: 8
+                        borderWidth: 3,
+                        borderRadius: 10
                     }]
                 },
                 options: {
@@ -357,6 +400,9 @@
                             display: false
                         },
                         tooltip: {
+                            bodyFont: { size: 14 },
+                            titleFont: { size: 16 },
+                            padding: 12,
                             callbacks: {
                                 label: function(context) {
                                     return 'R$ ' + formatarReal(context.parsed.y);
@@ -372,7 +418,7 @@
                                     return 'R$ ' + formatarReal(value);
                                 },
                                 color: '#1a1a1a',
-                                font: { weight: '600' }
+                                font: { weight: '600', size: 13 }
                             },
                             grid: {
                                 color: '#e5e7eb'
@@ -381,7 +427,7 @@
                         x: {
                             ticks: {
                                 color: '#1a1a1a',
-                                font: { weight: '600' }
+                                font: { weight: '600', size: 13 }
                             },
                             grid: {
                                 display: false
@@ -423,14 +469,14 @@
                         data: values,
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        borderWidth: 3,
+                        borderWidth: 4,
                         fill: true,
                         tension: 0.4,
                         pointBackgroundColor: '#10b981',
                         pointBorderColor: '#ffffff',
-                        pointBorderWidth: 2,
-                        pointRadius: 5,
-                        pointHoverRadius: 7
+                        pointBorderWidth: 3,
+                        pointRadius: 7,
+                        pointHoverRadius: 9
                     }]
                 },
                 options: {
@@ -441,6 +487,9 @@
                             display: false
                         },
                         tooltip: {
+                            bodyFont: { size: 14 },
+                            titleFont: { size: 16 },
+                            padding: 12,
                             callbacks: {
                                 label: function(context) {
                                     return 'R$ ' + formatarReal(context.parsed.y);
@@ -456,7 +505,7 @@
                                     return 'R$ ' + formatarReal(value);
                                 },
                                 color: '#1a1a1a',
-                                font: { weight: '600' }
+                                font: { weight: '600', size: 13 }
                             },
                             grid: {
                                 color: '#e5e7eb'
@@ -465,7 +514,7 @@
                         x: {
                             ticks: {
                                 color: '#1a1a1a',
-                                font: { weight: '600' }
+                                font: { weight: '600', size: 13 }
                             },
                             grid: {
                                 display: false
@@ -502,7 +551,7 @@
                         data: values,
                         backgroundColor: cores,
                         borderColor: '#ffffff',
-                        borderWidth: 2
+                        borderWidth: 3
                     }]
                 },
                 options: {
@@ -512,12 +561,15 @@
                         legend: {
                             position: 'bottom',
                             labels: {
-                                padding: 15,
-                                font: { size: 12, weight: '600' },
+                                padding: 20,
+                                font: { size: 14, weight: '600' },
                                 color: '#1a1a1a'
                             }
                         },
                         tooltip: {
+                            bodyFont: { size: 14 },
+                            titleFont: { size: 16 },
+                            padding: 12,
                             callbacks: {
                                 label: function(context) {
                                     const label = context.label || '';

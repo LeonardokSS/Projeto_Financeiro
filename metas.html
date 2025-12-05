@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metas Financeiras</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1929 0%, #1a2f3a 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 70px;
+            height: 100vh;
+            background: rgba(10, 25, 41, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            gap: 25px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .sidebar-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-item {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.6);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 20px;
+            text-decoration: none;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .main-content {
+            margin-left: 90px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            padding: 30px 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(20, 184, 166, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #14b8a6;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-select option {
+            background: #1a2f3a;
+            color: white;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            color: white;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(20, 184, 166, 0.4);
+        }
+
+        .metas-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .meta-item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .meta-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .meta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .meta-titulo {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .meta-valor {
+            color: #14b8a6;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .meta-progresso {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .meta-progresso-barra {
+            height: 100%;
+            background: linear-gradient(90deg, #14b8a6 0%, #0d9488 100%);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .meta-categoria {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(20, 184, 166, 0.2);
+            border-radius: 20px;
+            color: #14b8a6;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .meta-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-icon.delete:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .alert.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+
+            .main-content {
+                margin-left: 70px;
+            }
+
+            .header {
+                padding: 20px 25px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <i class="fas fa-wallet"></i>
+        </div>
+
+        <a href="/" class="sidebar-item" title="Dashboard">
+            <i class="fas fa-home"></i>
+        </a>
+
+        <a href="/ver-gastos" class="sidebar-item" title="Gastos">
+            <i class="fas fa-receipt"></i>
+        </a>
+
+        <a href="/grafico-dados" class="sidebar-item" title="Gráficos">
+            <i class="fas fa-chart-line"></i>
+        </a>
+
+        <a href="#" class="sidebar-item" title="Relatórios">
+            <i class="fas fa-file-alt"></i>
+        </a>
+
+        <a href="#" class="sidebar-item" title="Configurações">
+            <i class="fas fa-cog"></i>
+        </a>
+
+        <a href="#" class="sidebar-item" style="margin-top: auto;" title="Ajuda">
+            <i class="fas fa-question-circle"></i>
+        </a>
+
+        <a href="#" class="sidebar-item" title="Sair">
+            <i class="fas fa-sign-out-alt"></i>
+        </a>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="header">
+                <div class="header-content">
+                    <h1>
+                        <i class="fas fa-bullseye"></i>
+                        Metas Financeiras
+                    </h1>
+                    <p>Defina e acompanhe seus objetivos financeiros</p>
+                </div>
+            </div>
+
+            <div id="alertBox" class="alert"></div>
+
+            <div class="content-grid">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-plus-circle" style="color: #14b8a6;"></i>
+                        Nova Meta
+                    </h2>
+
+                    <form id="formMeta">
+                        <div class="form-group">
+                            <label class="form-label">Nome da Meta</label>
+                            <input type="text" class="form-input" name="nome" placeholder="Ex: Economizar para viagem" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Valor Alvo (R$)</label>
+                            <input type="number" class="form-input" name="valorAlvo" placeholder="0.00" step="0.01" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Categoria</label>
+                            <select class="form-select" name="categoria" required>
+                                <option value="">Selecione uma categoria</option>
+                                <option value="economia">💰 Economia</option>
+                                <option value="investimento">📈 Investimento</option>
+                                <option value="viagem">✈️ Viagem</option>
+                                <option value="educacao">📚 Educação</option>
+                                <option value="saude">🏥 Saúde</option>
+                                <option value="casa">🏠 Casa</option>
+                                <option value="veiculo">🚗 Veículo</option>
+                                <option value="outro">📌 Outro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Data Limite</label>
+                            <input type="date" class="form-input" name="dataLimite" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Valor Atual (R$)</label>
+                            <input type="number" class="form-input" name="valorAtual" placeholder="0.00" step="0.01" value="0">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i>
+                            Criar Meta
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-list" style="color: #14b8a6;"></i>
+                        Minhas Metas
+                    </h2>
+
+                    <div id="metasLista" class="metas-lista">
+                        <div class="empty-state">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const formMeta = document.getElementById('formMeta');
+        const metasLista = document.getElementById('metasLista');
+        const alertBox = document.getElementById('alertBox');
+
+        carregarMetas();
+
+        formMeta.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(formMeta);
+            const meta = {
+                nome: formData.get('nome'),
+                valorAlvo: parseFloat(formData.get('valorAlvo')),
+                valorAtual: parseFloat(formData.get('valorAtual')) || 0,
+                categoria: formData.get('categoria'),
+                dataLimite: formData.get('dataLimite'),
+                dataCriacao: new Date().toISOString()
+            };
+
+            try {
+                const response = await fetch('/salvar-meta', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(meta)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    mostrarAlerta('Meta criada com sucesso!', 'success');
+                    formMeta.reset();
+                    carregarMetas();
+                } else {
+                    mostrarAlerta('Erro ao criar meta', 'error');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                mostrarAlerta('Erro ao criar meta', 'error');
+            }
+        });
+
+        async function carregarMetas() {
+            try {
+                const response = await fetch('/listar-metas');
+                const data = await response.json();
+                const metas = data.metas || [];
+
+                if (metas.length === 0) {
+                    metasLista.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-bullseye"></i>
+                            <p>Nenhuma meta criada ainda</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                metasLista.innerHTML = metas.map(meta => {
+                    const progresso = (meta.valorAtual / meta.valorAlvo) * 100;
+                    const progressoLimitado = Math.min(progresso, 100);
+                    
+                    const dataLimite = new Date(meta.dataLimite);
+                    const dataFormatada = dataLimite.toLocaleDateString('pt-BR');
+                    
+                    const categoriaEmoji = {
+                        'economia': '💰',
+                        'investimento': '📈',
+                        'viagem': '✈️',
+                        'educacao': '📚',
+                        'saude': '🏥',
+                        'casa': '🏠',
+                        'veiculo': '🚗',
+                        'outro': '📌'
+                    };
+
+                    return `
+                        <div class="meta-item">
+                            <div class="meta-header">
+                                <div>
+                                    <div class="meta-titulo">${meta.nome}</div>
+                                    <span class="meta-categoria">${categoriaEmoji[meta.categoria] || '📌'} ${meta.categoria}</span>
+                                </div>
+                                <div class="meta-actions">
+                                    <button class="btn-icon delete" onclick="deletarMeta(${meta.id})" title="Deletar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="meta-progresso">
+                                <div class="meta-progresso-barra" style="width: ${progressoLimitado}%"></div>
+                            </div>
+                            
+                            <div class="meta-info">
+                                <div>
+                                    <strong>R$ ${meta.valorAtual.toFixed(2)}</strong> de 
+                                    <span class="meta-valor">R$ ${meta.valorAlvo.toFixed(2)}</span>
+                                </div>
+                                <div>
+                                    <i class="fas fa-calendar"></i> ${dataFormatada}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Erro ao carregar metas:', error);
+            }
+        }
+
+        async function deletarMeta(id) {
+            try {
+                const response = await fetch(`/deletar-meta/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    mostrarAlerta('Meta removida!', 'success');
+                    carregarMetas();
+                } else {
+                    mostrarAlerta('Erro ao deletar meta', 'error');
+                }
+            } catch (error) {
+                mostrarAlerta('Erro inesperado ao deletar meta', 'error');
+            }
+        }
+
+        function mostrarAlerta(msg, tipo) {
+            alertBox.textContent = msg;
+            alertBox.className = `alert ${tipo} show`;
+
+            setTimeout(() => {
+                alertBox.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
