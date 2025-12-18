@@ -13,6 +13,7 @@
             box-sizing: border-box;
         }
 
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #0a1929 0%, #1a2f3a 100%);
@@ -25,6 +26,32 @@
             margin: 0 auto;
         }
 
+        .meta-mes {
+    margin: 20px 0;
+}
+
+        .meta-mes label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .meta-mes input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 16px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .meta-mes input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25);
+        }
         .welcome-header {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             padding: 30px 40px;
@@ -508,20 +535,14 @@
                         <div class="action-title">Ver Gráficos</div>
                     </a>
 
-                    <a href="#" class="action-card purple">
+                    <a href="/categorias" class="action-card purple">
                         <div class="action-icon">
                             <i class="fas fa-tags"></i>
                         </div>
                         <div class="action-title">Categorias</div>
                     </a>
 
-                    <a href="#" class="action-card gray">
-                        <div class="action-icon">
-                            <i class="fas fa-download"></i>
-                        </div>
-                        <div class="action-title">Exportar</div>
-                    </a>
-
+                    
                     <a href="/metas" class="action-card teal">
                         <div class="action-icon">
                             <i class="fas fa-bullseye"></i>
@@ -548,6 +569,10 @@
                             <i class="fas fa-bullseye"></i> Meta do Mês
                         </div>
                     </div>
+                    <div class="meta-mes">
+                        <label for="valor_meta_mes">Qual a meta de gastos para este mês?</label>
+                        <input type="number" id="valor_meta_mes" placeholder="R$ 0,00">
+                    </div>
 
                     <div class="progress-circle">
                         <svg width="200" height="200">
@@ -571,8 +596,10 @@
                             <span class="goal-stat-value" id="gastoAtual">R$ 0</span>
                             <span class="goal-stat-label">Gasto Atual</span>
                         </div>
+                        <br>
+                        <br>
                         <div class="goal-stat">
-                            <span class="goal-stat-value" id="metaTotal">R$ 2000</span>
+                            <span class="goal-stat-value" id="metaTotal">R$ </span>
                             <span class="goal-stat-label">Meta</span>
                         </div>
                     </div>
@@ -726,33 +753,43 @@
         }
 
         function calcularMeta(gastos) {
-            const mesAtual = new Date().getMonth();
-            const anoAtual = new Date().getFullYear();
-            
-            const gastosMesAtual = gastos.filter(g => {
-                const data = new Date(g.data);
-                return data.getMonth() === mesAtual && data.getFullYear() === anoAtual;
-            });
+    const mesAtual = new Date().getMonth();
+    const anoAtual = new Date().getFullYear();
 
-            const totalGasto = gastosMesAtual.reduce((acc, g) => acc + parseFloat(g.valor), 0);
-            const meta = 2000;
-            const porcentagem = Math.min((totalGasto / meta) * 100, 100);
+    const gastosMesAtual = gastos.filter(g => {
+        const data = new Date(g.data);
+        return data.getMonth() === mesAtual && data.getFullYear() === anoAtual;
+    });
 
-            document.getElementById('gastoAtual').textContent = `R$ ${totalGasto.toFixed(2)}`;
-            document.getElementById('metaTotal').textContent = `R$ ${meta.toFixed(2)}`;
-            document.getElementById('progressPercentage').textContent = `${porcentagem.toFixed(0)}%`;
+    const totalGasto = gastosMesAtual.reduce((acc, g) => acc + parseFloat(g.valor), 0);
 
-            const circle = document.getElementById('progressCircle');
-            const circumference = 2 * Math.PI * 85;
-            const offset = circumference - (porcentagem / 100) * circumference;
-            
-            circle.style.strokeDasharray = circumference;
-            circle.style.strokeDashoffset = circumference;
-            
-            setTimeout(() => {
-                circle.style.strokeDashoffset = offset;
-            }, 100);
-        }
+    const metaInput = document.getElementById('valor_meta_mes');
+    const meta = parseFloat(metaInput.value) || 0;
+
+    if (meta === 0) {
+        document.getElementById('gastoAtual').textContent = `R$ ${totalGasto.toFixed(2)}`;
+        document.getElementById('metaTotal').textContent = `R$ 0,00`;
+        document.getElementById('progressPercentage').textContent = `0%`;
+        return;
+    }
+
+    const porcentagem = Math.min((totalGasto / meta) * 100, 100);
+
+    document.getElementById('gastoAtual').textContent = `R$ ${totalGasto.toFixed(2)}`;
+    document.getElementById('metaTotal').textContent = `R$ ${meta.toFixed(2)}`;
+    document.getElementById('progressPercentage').textContent = `${porcentagem.toFixed(0)}%`;
+
+    const circle = document.getElementById('progressCircle');
+    const circumference = 2 * Math.PI * 85;
+    const offset = circumference - (porcentagem / 100) * circumference;
+
+    circle.style.strokeDasharray = circumference;
+    circle.style.strokeDashoffset = circumference;
+
+    setTimeout(() => {
+        circle.style.strokeDashoffset = offset;
+    }, 100);
+}
 
         function marcarItemAtivo() {
             const path = window.location.pathname;
@@ -778,6 +815,10 @@
         atualizarSaudacao();
         marcarItemAtivo();
         carregarDados();
+        document.getElementById('valor_meta_mes').addEventListener('input', () => {
+    carregarDados();
+});
+
     </script>
 </body>
 </html>

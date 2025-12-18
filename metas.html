@@ -373,6 +373,62 @@
                 font-size: 22px;
             }
         }
+        .meta-add {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.meta-add-rapido {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-valor {
+    flex: 1;
+    padding: 8px 0;
+    border-radius: 8px;
+    border: none;
+    background: rgba(20, 184, 166, 0.15);
+    color: #14b8a6;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-valor:hover {
+    background: rgba(20, 184, 166, 0.3);
+}
+
+.meta-add-custom {
+    display: flex;
+    gap: 10px;
+}
+
+.meta-add-custom input {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+.meta-add-custom input::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.meta-add-custom button {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
     </style>
 </head>
 <body>
@@ -594,6 +650,19 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="meta-add">
+    <div class="meta-add-rapido">
+        <button class="btn-valor" onclick="adicionarValorMeta(${meta.id}, 10)">+10</button>
+        <button class="btn-valor" onclick="adicionarValorMeta(${meta.id}, 20)">+20</button>
+        <button class="btn-valor" onclick="adicionarValorMeta(${meta.id}, 50)">+50</button>
+    </div>
+
+    <div class="meta-add-custom">
+        <input type="number" placeholder="Valor personalizado" id="custom-${meta.id}">
+        <button onclick="adicionarValorCustom(${meta.id})">Adicionar</button>
+    </div>
+</div>
+  
                     `;
                 }).join('');
             } catch (error) {
@@ -626,6 +695,34 @@
                 alertBox.classList.remove('show');
             }, 3000);
         }
+        async function adicionarValorMeta(id, valor) {
+    try {
+        const response = await fetch(`/adicionar-valor-meta/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ valor })
+        });
+
+        if (response.ok) {
+            carregarMetas();
+        } else {
+            mostrarAlerta('Erro ao adicionar valor à meta', 'error');
+        }
+    } catch {
+        mostrarAlerta('Erro inesperado', 'error');
+    }
+}
+
+async function adicionarValorCustom(id) {
+    const input = document.getElementById(`custom-${id}`);
+    const valor = parseFloat(input.value);
+
+    if (!valor || valor <= 0) return;
+
+    await adicionarValorMeta(id, valor);
+    input.value = '';
+}
+
     </script>
 </body>
 </html>

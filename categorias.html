@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categorias de Gastos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0d4d0d 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            border: 2px solid #10b981;
+        }
+
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .stats-card h3 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+
+        .btn-atualizar {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-atualizar:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-nova-categoria {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-left: 10px;
+        }
+
+        .btn-nova-categoria:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.2s;
+        }
+
+        tbody tr:hover {
+            background-color: #f0fdf4;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        td {
+            padding: 15px;
+            color: #333;
+        }
+
+        .categoria-cell {
+            font-weight: 600;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .categoria-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #10b981;
+        }
+
+        .valor-cell {
+            color: #10b981;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .quantidade-cell {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .percentual-cell {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .btn-deletar {
+            padding: 8px 16px;
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            margin-right: 5px;
+        }
+
+        .btn-deletar:hover {
+            background-color: #dc2626;
+            transform: scale(1.05);
+        }
+
+        .btn-editar {
+            padding: 8px 16px;
+            background-color: #f59e0b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .btn-editar:hover {
+            background-color: #d97706;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+        }
+
+        .empty-state-subtext {
+            font-size: 14px;
+            color: #666;
+        }
+
+        #msg {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        #msg.show {
+            display: block;
+        }
+
+        #msg.success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        #msg.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Modal para nova categoria */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 2px solid #10b981;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #1a1a1a;
+            font-size: 24px;
+        }
+
+        .close {
+            color: #666;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close:hover {
+            color: #1a1a1a;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn-cancelar {
+            padding: 10px 20px;
+            background-color: #9ca3af;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-cancelar:hover {
+            background-color: #6b7280;
+        }
+
+        .btn-salvar {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-salvar:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .header-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .stats-card {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .btn-atualizar,
+            .btn-nova-categoria {
+                width: 100%;
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            th, td {
+                padding: 10px 8px;
+                font-size: 13px;
+            }
+        }
+
+        .btn-voltar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-voltar:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <a href="/index.html" class="btn-voltar">Voltar</a>
+    
+    <div class="container">
+        <h1>🏷️ Categorias de Gastos</h1>
+        
+        <div class="header-section">
+            <div class="stats-card">
+                <h3>Total de Categorias</h3>
+                <span id="total-categorias">0</span>
+            </div>
+            
+            <div class="stats-card">
+                <h3>Valor Total</h3>
+                R$ <span id="valor-total">0,00</span>
+            </div>
+            
+            <div class="stats-card">
+                <h3>Média por Categoria</h3>
+                R$ <span id="media-categoria">0,00</span>
+            </div>
+            
+            <button class="btn-atualizar" onclick="carregarCategorias()">🔄 Atualizar</button>
+            <button class="btn-nova-categoria" onclick="abrirModal()">➕ Nova Categoria</button>
+        </div>
+
+        <div class="table-container">
+            <table id="tabelaCategorias">
+                <thead>
+                    <tr>
+                        <th>Categoria</th>
+                        <th>Valor Total</th>
+                        <th>Quantidade</th>
+                        <th>Percentual</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="corpoTabela">
+                    <tr>
+                        <td colspan="5" class="loading">Carregando categorias...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p id="msg"></p>
+    </div>
+
+    <!-- Modal para Nova Categoria -->
+    <div id="modalCategoria" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nova Categoria</h2>
+                <span class="close" onclick="fecharModal()">&times;</span>
+            </div>
+            <form id="formCategoria" onsubmit="salvarCategoria(event)">
+                <div class="form-group">
+                    <label for="nomeCategoria">Nome da Categoria</label>
+                    <input type="text" id="nomeCategoria" required placeholder="Ex: Alimentação, Transporte, Lazer...">
+                </div>
+                <div class="form-group">
+                    <label for="corCategoria">Cor de Identificação</label>
+                    <select id="corCategoria">
+                        <option value="#10b981">Verde</option>
+                        <option value="#3b82f6">Azul</option>
+                        <option value="#f59e0b">Amarelo</option>
+                        <option value="#ef4444">Vermelho</option>
+                        <option value="#8b5cf6">Roxo</option>
+                        <option value="#ec4899">Rosa</option>
+                        <option value="#14b8a6">Turquesa</option>
+                        <option value="#f97316">Laranja</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="limiteCategoria">Limite Mensal (opcional)</label>
+                    <input type="number" id="limiteCategoria" step="0.01" placeholder="Ex: 1000.00">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+                    <button type="submit" class="btn-salvar">Salvar Categoria</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Função para formatar valor em reais
+        function formatarReal(valor) {
+            return parseFloat(valor || 0).toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Função para calcular percentual
+        function calcularPercentual(valor, total) {
+            if (total === 0) return 0;
+            return ((valor / total) * 100).toFixed(1);
+        }
+
+        // Variáveis globais
+        let categoriasData = [];
+        let totalGeral = 0;
+
+        // Função para carregar categorias
+        function carregarCategorias() {
+            fetch("/estatisticas")
+                .then(r => r.json())
+                .then(res => {
+                    const corpoTabela = document.getElementById("corpoTabela");
+                    const totalCategoriasElement = document.getElementById("total-categorias");
+                    const valorTotalElement = document.getElementById("valor-total");
+                    const mediaCategoriaElement = document.getElementById("media-categoria");
+                    
+                    // Limpa a tabela
+                    corpoTabela.innerHTML = "";
+                    
+                    if (res.porCategoria && res.porCategoria.length > 0) {
+                        categoriasData = res.porCategoria;
+                        totalGeral = parseFloat(res.valorTotal) || 0;
+                        const totalCategorias = res.porCategoria.length;
+                        
+                        // Atualiza os cards de estatísticas
+                        totalCategoriasElement.textContent = totalCategorias;
+                        valorTotalElement.textContent = formatarReal(totalGeral);
+                        mediaCategoriaElement.textContent = formatarReal(totalGeral / totalCategorias);
+                        
+                        // Ordena por valor total (decrescente)
+                        res.porCategoria.sort((a, b) => b.total - a.total);
+                        
+                        // Preenche a tabela
+                        res.porCategoria.forEach(categoria => {
+                            const percentual = calcularPercentual(categoria.total, totalGeral);
+                            const cor = gerarCor(categoria._id);
+                            
+                            const linha = document.createElement("tr");
+                            linha.innerHTML = `
+                                <td class="categoria-cell">
+                                    <span class="categoria-color" style="background-color: ${cor}"></span>
+                                    ${categoria._id}
+                                </td>
+                                <td class="valor-cell">R$ ${formatarReal(categoria.total)}</td>
+                                <td class="quantidade-cell">${categoria.quantidade}</td>
+                                <td class="percentual-cell">${percentual}%</td>
+                                <td>
+                                    <button class="btn-editar" onclick="verGastosCategoria('${categoria._id}')">
+                                        📋 Ver Gastos
+                                    </button>
+                                </td>
+                            `;
+                            corpoTabela.appendChild(linha);
+                        });
+                    } else {
+                        corpoTabela.innerHTML = `
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">🏷️</div>
+                                        <div class="empty-state-text">Nenhuma categoria encontrada</div>
+                                        <div class="empty-state-subtext">Adicione gastos para ver as categorias</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                        
+                        totalCategoriasElement.textContent = "0";
+                        valorTotalElement.textContent = "0,00";
+                        mediaCategoriaElement.textContent = "0,00";
+                    }
+                })
+                .catch(err => {
+                    console.error("Erro ao carregar categorias:", err);
+                    mostrarMensagem("Erro ao carregar categorias. Tente novamente.", "error");
+                });
+        }
+
+        // Função para gerar cor baseada no nome da categoria
+        function gerarCor(nome) {
+            const cores = [
+                '#10b981', '#3b82f6', '#f59e0b', '#ef4444',
+                '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'
+            ];
+            
+            // Gera um índice baseado no hash do nome
+            let hash = 0;
+            for (let i = 0; i < nome.length; i++) {
+                hash = nome.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const indice = Math.abs(hash) % cores.length;
+            return cores[indice];
+        }
+
+        // Função para ver gastos de uma categoria específica
+        function verGastosCategoria(categoria) {
+            window.location.href = `/ver-gastos?categoria=${encodeURIComponent(categoria)}`;
+        }
+
+        // Funções do modal
+        function abrirModal() {
+            document.getElementById('modalCategoria').style.display = 'block';
+        }
+
+        function fecharModal() {
+            document.getElementById('modalCategoria').style.display = 'none';
+            document.getElementById('formCategoria').reset();
+        }
+
+        // Fechar modal ao clicar fora
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalCategoria');
+            if (event.target === modal) {
+                fecharModal();
+            }
+        }
+
+        // Função para salvar nova categoria
+        function salvarCategoria(event) {
+            event.preventDefault();
+            
+            const nome = document.getElementById('nomeCategoria').value;
+            const cor = document.getElementById('corCategoria').value;
+            const limite = document.getElementById('limiteCategoria').value;
+            
+            // Aqui você pode implementar a lógica para salvar a nova categoria
+            // Por enquanto, vamos apenas mostrar uma mensagem
+            mostrarMensagem(`Categoria "${nome}" adicionada com sucesso!`, "success");
+            fecharModal();
+            
+            // Atualiza a lista após um pequeno delay
+            setTimeout(carregarCategorias, 1000);
+        }
+
+        // Função para mostrar mensagens
+        function mostrarMensagem(texto, tipo) {
+            const msgElement = document.getElementById("msg");
+            msgElement.textContent = texto;
+            msgElement.className = `show ${tipo}`;
+            
+            setTimeout(() => {
+                msgElement.className = "";
+            }, 3000);
+        }
+
+        // Carrega as categorias quando a página é carregada
+        window.addEventListener("DOMContentLoaded", carregarCategorias);
+    </script>
+</body>
+</html>

@@ -43,6 +43,11 @@ app.get('/metas', (req, res) => {
     res.sendFile(__dirname + '/metas.html');
 });
 
+// ==================== NOVA ROTA - Página de Categorias ====================
+app.get('/categorias', (req, res) => {
+    res.sendFile(__dirname + '/categorias.html');
+});
+
 // ==================== ROTAS DE GASTOS ====================
 
 // Listar gastos
@@ -101,7 +106,9 @@ app.post('/salvar-gasto', async (req, res) => {
         // Adicionar ID ao novo gasto
         novoGasto.id = novoId;
         novoGasto.valor = parseFloat(novoGasto.valor);
-        novoGasto.data = new Date();
+        novoGasto.data = novoGasto.data
+    ? new Date(novoGasto.data)
+    : new Date();
         
         // Inserir o novo gasto no banco de dados
         const result = await collection.insertOne(novoGasto);
@@ -129,6 +136,44 @@ app.post('/salvar-gasto', async (req, res) => {
         client.close();
     }
 });
+
+app.put('/adicionar-valor-meta/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    const { valor } = req.body;
+
+    if (!valor || valor <= 0) {
+        return res.status(400).json({ erro: 'Valor inválido' });
+    }
+
+    const client = new MongoClient(url);
+
+    try {
+        await client.connect();
+        const db = client.db(dbName);
+        const collection = db.collection(metasCollectionName);
+
+        const result = await collection.updateOne(
+            { id: id },
+            { 
+                $inc: { valorAtual: Number(valor) },
+                $set: { dataAtualizacao: new Date() }
+            }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ erro: 'Meta não encontrada' });
+        }
+
+        return res.json({ sucesso: true });
+
+    } catch (err) {
+        console.error('Erro ao adicionar valor à meta:', err);
+        return res.status(500).json({ erro: 'Erro interno' });
+    } finally {
+        client.close();
+    }
+});
+
 
 // Deletar um gasto
 app.delete('/deletar-gasto/:id', async (req, res) => {
@@ -258,14 +303,7 @@ app.get('/estatisticas', async (req, res) => {
 // ==================== ROTAS DE METAS ====================
 
 // Listar metas
-
-app.get('/metas', (req, res) => {
-    res.sendFile(__dirname + '/metas.html');
-});
-
-
 app.get('/listar-metas', async (req, res) => {
- 
     const client = new MongoClient(url);
 
     try {
@@ -284,7 +322,6 @@ app.get('/listar-metas', async (req, res) => {
         client.close();
     }
 });
-
 
 // Salvar uma nova meta
 app.post('/salvar-meta', async (req, res) => {

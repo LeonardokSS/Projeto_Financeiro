@@ -44,7 +44,10 @@
             flex-wrap: wrap;
             gap: 15px;
         }
-
+        .nome-cell {
+            font-weight: 600;
+            color: #111827;
+        }
         .total-gasto {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
@@ -263,6 +266,7 @@
                 <thead>
                     <tr>
                         <th>Categoria</th>
+                        <th>Nome</th>
                         <th>Valor</th>
                         <th>Data</th>
                         <th>Ações</th>
@@ -270,7 +274,7 @@
                 </thead>
                 <tbody id="corpoTabela">
                     <tr>
-                        <td colspan="4" class="loading">Carregando gastos...</td>
+                        <td colspan="5" class="loading">Carregando gastos...</td>
                     </tr>
                 </tbody>
             </table>
@@ -319,15 +323,17 @@
                             
                             const linha = document.createElement("tr");
                             linha.innerHTML = `
-                                <td class="categoria-cell">${gasto.categoria}</td>
-                                <td class="valor-cell">R$ ${formatarReal(gasto.valor)}</td>
-                                <td class="data-cell">${formatarData(gasto.data || new Date())}</td>
-                                <td>
-                                    <button class="btn-deletar" onclick="deletarGasto(${gasto.id})">
-                                        🗑️ Deletar
-                                    </button>
-                                </td>
-                            `;
+    <td class="nome-cell">${gasto.nome || '—'}</td>
+    <td class="categoria-cell">${gasto.categoria}</td>
+    <td class="valor-cell">R$ ${formatarReal(gasto.valor)}</td>
+    <td class="data-cell">${formatarData(gasto.data || new Date())}</td>
+    <td>
+        <button class="btn-deletar" onclick="deletarGasto(${gasto.id})">
+            🗑️ Deletar
+        </button>
+    </td>
+`;
+
                             corpoTabela.appendChild(linha);
                         });
                         
@@ -335,7 +341,7 @@
                     } else {
                         corpoTabela.innerHTML = `
                             <tr>
-                                <td colspan="4">
+                                <td colspan="5">
                                     <div class="empty-state">
                                         <div class="empty-state-icon">📭</div>
                                         <div class="empty-state-text">Nenhum gasto registrado</div>
